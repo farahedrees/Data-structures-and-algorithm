@@ -1,20 +1,23 @@
 #include <iostream>
+#include <queue>
 
 using namespace std;
 
 struct Node {
     int data;
     Node* right , * left;
-    int balanceFactor;
+    int balanceFactor , height;
     Node(int value) {
         data = value;
         right = left = nullptr;
         balanceFactor = 0;
+        height = 1;
     }
     Node() {
         data = 0;
         right = left = nullptr;
         balanceFactor = 0;
+        height = 1;
     }
 };
 
@@ -39,7 +42,7 @@ public:
     int height(Node* node) {
         if (!node)
             return 0;
-        return 1 + max(height(node->left), height(node->right));
+        return node->height;
     }
 
     int getBalance(Node* node) {
@@ -47,14 +50,7 @@ public:
             return 0;
         return height(node->left) - height(node->right);
     }
-    
-    void inorder(Node* node){
-        if (node != nullptr) {
-            inorder(node->left);
-            cout << node->data << " ";
-            inorder(node->right);
-        }
-    }
+
 
     Node* search(Node* node, int value) {                //recursive search function
         if (!node || node->data == value)
@@ -80,6 +76,8 @@ public:
         // Update balance factors
         y->balanceFactor = getBalance(y);
         x->balanceFactor = getBalance(x);
+        y->height = 1 + max(height(y->left), height(y->right));
+        x->height = 1 + max(height(x->left), height(x->right));
 
         // Return new root
         return x;
@@ -96,6 +94,8 @@ public:
         // Update balance factors
         x->balanceFactor = getBalance(x);
         y->balanceFactor = getBalance(y);
+        x->height = 1 + max(height(x->left), height(x->right));
+        y->height = 1 + max(height(y->left), height(y->right));
 
         // Return new root
         return y;
@@ -123,6 +123,7 @@ public:
             return node; // Duplicate keys not allowed
 
         // Update balance factor of this ancestor node
+        node->height = 1 + max(height(node->left), height(node->right));
         node->balanceFactor = getBalance(node);
 
         // If this node becomes unbalanced, then there are 4 cases
@@ -154,7 +155,7 @@ public:
     Node* deletenode(Node* node , int value){
         // Perform the normal BST deletion
 
-        if (node == nullptr) return new Node(value);           
+        if (node == nullptr) return nullptr;           
         if (value < node->data)
             node->left = deletenode(node->left, value);
         else if (value > node->data)
@@ -171,15 +172,16 @@ public:
 
                 // No child case
                 if (temp == NULL) {
-                    temp = node;
-                    node = NULL;
+                    delete node;
+                    return nullptr;
                 }
                 else // One child case
                     *node = *temp; // Copy the contents of the non-empty child
                 delete temp;
             }
             else {
-                // Node with two children: Get the inorder successor (smallest in the right subtree)
+                // Node with two children: Get the inorder successor
+
                 Node* temp = node->right;
 
                 while (temp->left != NULL)
@@ -193,6 +195,8 @@ public:
             }
 
         }
+
+        node->height = 1 + max(height(node->left),height(node->right));
 
         // Update balance factor of this ancestor node
         node->balanceFactor = getBalance(node);
@@ -216,11 +220,73 @@ public:
 
         return node;
     }
+    
+    Node* deletenode(int value) {                                  //public delete function
+        root = deletenode(root, value);
+        return root;   
+    }
+    
+    
+    void inorder(Node* node){
+        if (node != nullptr) {
+            inorder(node->left);
+            cout << node->data << " ";
+            inorder(node->right);
+        }
+    }
 
+    void inorder() {                                  //public inorder function
+        inorder(root);
+    }
+    
+    void preorder(Node* node) {
+        if (node != nullptr) {
+            cout << node->data << " ";
+            preorder(node->left);
+            preorder(node->right);
+        }
+    }
 
+    void preorder() {                                 //public preorder function
+        preorder(root);
+    }
 
+    void postorder(Node* node) {
+        if (node != nullptr) {
+            postorder(node->left);
+            postorder(node->right);
+            cout << node->data << " ";
+        }
+    }
 
+    void postorder() {                                //public postorder function
+        postorder(root);
+    }
+
+    // BFS
+    void bfs(Node* node) {
+        if (node == nullptr) return;
+
+        queue<Node*> q;
+        q.push(node);
+
+        while (!q.empty()) {
+            Node* current = q.front();
+            q.pop();
+
+            cout << current->data << " ";
+
+            if (current->left)
+                q.push(current->left);
+            if (current->right)
+                q.push(current->right);
+        }
+    }
+    void bfs() {                                    //public bfs function
+        bfs(root);
+    }
 
 
 };
+
 
