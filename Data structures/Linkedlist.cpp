@@ -2,10 +2,7 @@
 using namespace std;
 
 template <typename T>
-
-
-class Node {
-public:
+struct Node {
     T data;
     Node* next;
     Node(T val) {
@@ -185,10 +182,9 @@ public:
         return false;
     }
 
+    //O(1)
     void insertfirst(const T& val) {
         Node<T>* newNode = new Node<T>(val);
-
-        if (this->search(val)) throw runtime_error("Value already exists in the list.");  
         if (newNode == nullptr) throw runtime_error("Memory allocation failed.");
 
         if (isEmpty()) this->head = this->tail = newNode;
@@ -200,10 +196,9 @@ public:
         this->size++;
     }
 
+    //O(1)
     void insertlast(const T& val) {
-        Node<T>* newNode = new Node<T>(val);
-
-        if (this->search(val)) throw runtime_error("Value already exists in the list.");  
+        Node<T>* newNode = new Node<T>(val); 
         if (newNode == nullptr) throw runtime_error("Memory allocation failed.");
 
         if (isEmpty()) this->head = this->tail = newNode;
@@ -215,6 +210,7 @@ public:
         this->size++;
     }
 
+    //O(n)
     void deletenode(const T& val) override{
         if (this->isEmpty()) {
             throw runtime_error("List is empty");
@@ -340,7 +336,6 @@ public:
         }
         if (current == nullptr || current->data != val) throw runtime_error("Value not found in the list");
         
-
         // First case : Deleting the head node
         if(current == this->head){
             this->head = this->head->next;
